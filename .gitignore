@@ -1,0 +1,7 @@
+﻿#Ignore Flutter and Python cache files
+.dart_tool/
+.idea/
+.vscode/
+build/
+*.log
+scripts/python/env/
