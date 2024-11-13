@@ -17,7 +17,7 @@ class GameBoard extends StatefulWidget {
 
 class GameBoardState extends State<GameBoard> {
   // Initialize a 4x4 grid of cells
-  final List<List<Cell>> _grid = List.generate(
+  List<List<Cell>> _grid = List.generate(
     4,
     (i) => List.generate(4, (j) => Cell(marble: null)),
   );
@@ -37,12 +37,12 @@ class GameBoardState extends State<GameBoard> {
   void _handleCellTap(int row, int col) {
     setState(() {
       // Check if there is a marble and it belongs to the current player
-      if (_grid[row][col].marble == currentPlayer) {
+      if (_grid[row][col].marble == null) {
+        _grid[row][col].marble = currentPlayer;
+        currentPlayer = currentPlayer == 'X' ? 'O' : 'X';   // Switch turns between 'X' and 'O'
+      } else {
         // Call the counterclockwise movement function
         _moveMarbleCounterclockwise(row, col);
-
-        // Switch turns between 'X' and 'O'
-        currentPlayer = currentPlayer == 'X' ? 'O' : 'X';
       }
     });
   }
@@ -80,49 +80,53 @@ class GameBoardState extends State<GameBoard> {
       appBar: AppBar(
         title: const Text('MarbleMind'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('Current Player: $currentPlayer'),
-          const SizedBox(height: 20),
-          // Create the 4x4 grid
-          GridView.builder(
-            shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              childAspectRatio: 1.0,
-            ),
-            itemCount: 16, // 4x4 grid = 16 items
-            itemBuilder: (context, index) {
-              int row = index ~/ 4;
-              int col = index % 4;
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Current Player: $currentPlayer'),
+            const SizedBox(height: 20),
+            // Create the 4x4 grid
+            GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 1.0,
+              ),
+              itemCount: 16, // 4x4 grid = 16 items
+              itemBuilder: (context, index) {
+                int row = index ~/ 4;
+                int col = index % 4;
 
-              return GestureDetector(
-                onTap: () => _handleCellTap(row, col),
-                child: Container(
-                  margin: const EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    color: _grid[row][col].marble == null
-                        ? Colors.white
-                        : _grid[row][col].marble == 'X'
-                            ? Colors.blue
-                            : Colors.red,
-                  ),
-                  child: Center(
-                    child: Text(
-                      _grid[row][col].marble ?? '',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
+                return GestureDetector(
+                  onTap: () => _handleCellTap(row, col),
+                  child: Container(
+                    margin: EdgeInsets.all(4.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                      color: _grid[row][col].marble == null
+                          ? Colors.white
+                          : _grid[row][col].marble == 'X'
+                              ? Colors.blue
+                              : Colors.red,
+                    ),
+                    child: Center(
+                      child: Text(
+                        _grid[row][col].marble ?? '',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color:_grid[row][col].marble == 'X'
+                              ? Colors.white
+                              : Colors.white, // Set the text color (white for both)
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-          ),
-        ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
