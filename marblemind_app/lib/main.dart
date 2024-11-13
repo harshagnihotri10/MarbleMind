@@ -6,6 +6,7 @@ void main() {
 }
 
 class MarbleMindApp extends StatelessWidget {
+  const MarbleMindApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
