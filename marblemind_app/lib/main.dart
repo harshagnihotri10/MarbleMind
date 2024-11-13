@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'game_screen.dart';  // Import the game screen file
+import 'game_board.dart';  // Import the game screen file
 
 void main() {
   runApp(MarbleMindApp());
