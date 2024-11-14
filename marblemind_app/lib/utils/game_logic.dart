@@ -1,13 +1,9 @@
 import '../models/cell.dart';
 
 class GameLogic {
-  // Function to move the marble in a counterclockwise direction
-  static bool moveMarbleCounterclockwise(
-      List<List<Cell>> grid, int row, int col) {
-    int directionIndex = 0; // Initial direction is up
-    bool marbleMoved = false;
-
-    // Directions for counterclockwise movement: up, left, down, right
+  // Function to shift all marbles counterclockwise in the entire grid
+  void shiftAllMarblesCounterclockwise(List<List<Cell>> grid, int excludeRow, int excludeCol) {
+    // Directions for counterclockwise movement (up, left, down, right)
     List<List<int>> directions = [
       [-1, 0],  // up
       [0, -1],  // left
@@ -15,33 +11,41 @@ class GameLogic {
       [0, 1]    // right
     ];
 
-    for (int i = 0; i < 4; i++) {
-      int newRow = row + directions[directionIndex][0];
-      int newCol = col + directions[directionIndex][1];
-
-      // Ensure the new position is within bounds of the grid (0-3)
-      if (newRow >= 0 && newRow < 4 && newCol >= 0 && newCol < 4) {
-        // Move the marble to the new position if it's empty
-        if (grid[newRow][newCol].marble == null) {
-          grid[newRow][newCol].marble = grid[row][col].marble;
-          grid[row][col].marble = null; // Empty the old position
-          marbleMoved = true; // Indicate that a move occurred
-           break; // Exit the loop once the marble is moved
+    List<Cell> marbles = [];
+    
+    // Collect all the marbles in the grid excluding the one placed in the current turn
+    for (int row = 0; row < 4; row++) {
+      for (int col = 0; col < 4; col++) {
+        if (grid[row][col].marble != null && (row != excludeRow || col != excludeCol)) {
+          marbles.add(grid[row][col]);
         }
       }
-
-      // Update the direction to the next one in counterclockwise order
-      directionIndex = (directionIndex + 1) % 4;
     }
 
-    // Check for a winner after the marble is successfully moved
-    if (marbleMoved && checkForWinner(grid)) {
-      return true; // Winning condition met
+    // Perform counterclockwise shift for all marbles
+    for (int i = 0; i < marbles.length; i++) {
+      // Get the current position of the marble
+      int currentRow = marbles[i].row;
+      int currentCol = marbles[i].col;
+
+      // Find the next position for the marble
+      for (int j = 0; j < 4; j++) {
+        int newRow = currentRow + directions[j][0];
+        int newCol = currentCol + directions[j][1];
+
+        // Check if new position is within bounds
+        if (newRow >= 0 && newRow < 4 && newCol >= 0 && newCol < 4) {
+          // Move the marble to the new position if it's empty
+          if (grid[newRow][newCol].marble == null) {
+            grid[newRow][newCol].marble = marbles[i].marble;
+            grid[currentRow][currentCol].marble = null; // Empty the old position
+            break;
+          }
+        }
+      }
+    }
   }
 
-    // If no winner found, return false
-    return false;
-  }
 
   // Function to check if there is a winner
   static bool checkForWinner(List<List<Cell>> grid) {
