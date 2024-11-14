@@ -14,11 +14,13 @@ class GameBoard extends StatefulWidget {
 }
 
 class GameBoardState extends State<GameBoard> {
-  List<List<Cell>> _grid = List.generate(4, (i) => List.generate(4, (j) => Cell(marble: null)));
+  List<List<Cell>> _grid = List.generate(4, (i) => List.generate(4, (j) => Cell(marble: null, row: i, col: j)));
   String currentPlayer = 'X';
   bool gameOver = false;
   Timer? _turnTimer;
   int _turnTimeLeft = 30;
+
+  GameLogic gameLogic = GameLogic();
 
 
   @override
@@ -52,47 +54,34 @@ class GameBoardState extends State<GameBoard> {
   }
 
   // Handle cell taps
-  void _handleCellTap(int row, int col) {
-    if (gameOver) {
-      _showGameOverDialog();  // Show a dialog if the game is over
-      return;
-    }
+void _handleCellTap(int row, int col) {
+  if (gameOver) {
+    _showGameOverDialog();  // Show a dialog if the game is over
+    return;
+  }
 
-    // Check if the tapped cell is already occupied
-    if (_grid[row][col].marble != null) {
-      // If the tapped cell contains the current player's marble, allow counterclockwise movement
-      if (_grid[row][col].marble == currentPlayer) {
-        // Perform counterclockwise movement and check for win
-        bool winDetected = GameLogic.moveMarbleCounterclockwise(_grid, row, col); 
-        
-        // Ensure UI is updated after the move
-        setState(() {});
-      
-      if (winDetected) {
-          gameOver = true;
-          stopTurnTimer(this);
-          _showWinnerDialog();
-          return;
-        }
-      } else {
-        // If the tapped cell contains the opponent's marble, do nothing
-        return;
-      }
+  // Check if the tapped cell is empty
+  if (_grid[row][col].marble == null) {
+    // Place the current player's marble on the empty cell
+    setState(() {
+      _grid[row][col].marble = currentPlayer;
+    });
+
+    // Trigger counterclockwise shift for all other marbles (excluding the newly placed marble)
+    gameLogic.shiftAllMarblesCounterclockwise(_grid, row, col);
+
+    // After shift, check for winner or game over condition
+    if (GameLogic.checkForWinner(_grid)) {
+      gameOver = true;
+      stopTurnTimer(this);
+      _showWinnerDialog();
     } else {
-      // If the tapped cell is empty, place the current player's marble
-      setState(() {
-        _grid[row][col].marble = currentPlayer;
-        // Check for winner or game over condition
-        if (GameLogic.checkForWinner(_grid)) {
-          gameOver = true;
-          stopTurnTimer(this);
-          _showWinnerDialog();
-        } else {
-          switchTurn();
-        }
-      });
+      // Change turn to the other player
+      switchTurn();
     }
   }
+}
+
   
 
   // Winner and game over check
