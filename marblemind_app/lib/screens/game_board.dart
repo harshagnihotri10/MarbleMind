@@ -62,7 +62,18 @@ class GameBoardState extends State<GameBoard> {
     if (_grid[row][col].marble != null) {
       // If the tapped cell contains the current player's marble, allow counterclockwise movement
       if (_grid[row][col].marble == currentPlayer) {
-        GameLogic.moveMarbleCounterclockwise(_grid, row, col);  // Move marble counterclockwise
+        // Perform counterclockwise movement and check for win
+        bool winDetected = GameLogic.moveMarbleCounterclockwise(_grid, row, col); 
+        
+        // Ensure UI is updated after the move
+        setState(() {});
+      
+      if (winDetected) {
+          gameOver = true;
+          stopTurnTimer(this);
+          _showWinnerDialog();
+          return;
+        }
       } else {
         // If the tapped cell contains the opponent's marble, do nothing
         return;

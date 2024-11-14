@@ -2,9 +2,10 @@ import '../models/cell.dart';
 
 class GameLogic {
   // Function to move the marble in a counterclockwise direction
-  static void moveMarbleCounterclockwise(
+  static bool moveMarbleCounterclockwise(
       List<List<Cell>> grid, int row, int col) {
     int directionIndex = 0; // Initial direction is up
+    bool marbleMoved = false;
 
     // Directions for counterclockwise movement: up, left, down, right
     List<List<int>> directions = [
@@ -24,13 +25,22 @@ class GameLogic {
         if (grid[newRow][newCol].marble == null) {
           grid[newRow][newCol].marble = grid[row][col].marble;
           grid[row][col].marble = null; // Empty the old position
-          break; // Exit the loop once the marble is moved
+          marbleMoved = true; // Indicate that a move occurred
+           break; // Exit the loop once the marble is moved
         }
       }
 
       // Update the direction to the next one in counterclockwise order
       directionIndex = (directionIndex + 1) % 4;
     }
+
+    // Check for a winner after the marble is successfully moved
+    if (marbleMoved && checkForWinner(grid)) {
+      return true; // Winning condition met
+  }
+
+    // If no winner found, return false
+    return false;
   }
 
   // Function to check if there is a winner
