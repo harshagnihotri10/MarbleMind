@@ -38,6 +38,7 @@ This project is for casual gamers and developers interested in exploring game lo
 ### Demo Video  
 
 Click below to watch the game in action:  
+
 https://github.com/user-attachments/assets/3f1cfa63-17b5-43b4-b0db-f7181bf61ac5
 
 ### Screenshots  
