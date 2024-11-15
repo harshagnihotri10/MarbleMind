@@ -46,22 +46,35 @@ class GameLogic {
     }
   }
 
-
-  // Function to check if there is a winner
+  // Function to check if there's a winner; returns true if a winner is found
   static bool checkForWinner(List<List<Cell>> grid) {
     // Check rows, columns, and diagonals for a winner
+    if (getWinningCells(grid).isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+
+  // Function to check if there is a winner
+  static List<Cell> getWinningCells(List<List<Cell>> grid) {
+    // Check rows, columns, and diagonals for a winner
+    List<Cell> winningCells = [];
+
+     // Check horizontal and vertical lines
     for (int i = 0; i < 4; i++) {
       if (grid[i][0].marble != null &&
           grid[i][0].marble == grid[i][1].marble &&
           grid[i][1].marble == grid[i][2].marble &&
           grid[i][2].marble == grid[i][3].marble) {
-        return true;
+        winningCells = [grid[i][0], grid[i][1], grid[i][2], grid[i][3]];  // Add winning cells
+        return winningCells;
       }
       if (grid[0][i].marble != null &&
           grid[0][i].marble == grid[1][i].marble &&
           grid[1][i].marble == grid[2][i].marble &&
           grid[2][i].marble == grid[3][i].marble) {
-        return true;
+        winningCells = [grid[0][i], grid[1][i], grid[2][i], grid[3][i]];  // Add winning cells
+        return winningCells;
       }
     }
 
@@ -69,14 +82,17 @@ class GameLogic {
         grid[0][0].marble == grid[1][1].marble &&
         grid[1][1].marble == grid[2][2].marble &&
         grid[2][2].marble == grid[3][3].marble) {
-      return true;
+      winningCells = [grid[0][0], grid[1][1], grid[2][2], grid[3][3]];
+      return winningCells;
     }
     if (grid[0][3].marble != null &&
         grid[0][3].marble == grid[1][2].marble &&
         grid[1][2].marble == grid[2][1].marble &&
         grid[2][1].marble == grid[3][0].marble) {
-      return true;
+      winningCells = [grid[0][3], grid[1][2], grid[2][1], grid[3][0]];
+      return winningCells;
     }
-    return false;
+
+    return winningCells;  // Return empty if no winner
   }
 }
