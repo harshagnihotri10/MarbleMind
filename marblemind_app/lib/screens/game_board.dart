@@ -71,16 +71,20 @@ class GameBoardState extends State<GameBoard> {
       gameLogic.shiftAllMarblesCounterclockwise(_grid, row, col);
 
       // After shift, check for winner or game over condition
-      if (GameLogic.checkForWinner(_grid)) {
+      String? winningPlayer = GameLogic.getWinningPlayer(_grid);
+      if (winningPlayer != null) {
         gameOver = true;
         stopTurnTimer(this);
         _highlightWinningCells(); // Highlight the winning cells
-        showWinnerDialog(context, currentPlayer);
-
-        return; // Exit to prevent switching the player
-      } 
-        // Change turn to the other player
-      switchTurn();
+        showWinnerDialog(context, winningPlayer); // Show the correct winning player's name
+        } else if (GameLogic.checkForDraw(_grid)) {  // New Draw Condition Check
+        gameOver = true;
+        stopTurnTimer(this);
+        _showDrawDialog();  
+        } else {
+          // Change turn to the other player
+          switchTurn();
+      }    
     }
   }
 
@@ -92,13 +96,28 @@ class GameBoardState extends State<GameBoard> {
 
   void _showWinnerDialog() {
     stopTurnTimer(this);
-    showWinnerDialog(
-        context, currentPlayer); // Using a dialog widget from dialogs.dart
+    showWinnerDialog(context, currentPlayer); // Using a dialog widget from dialogs.dart
+  }
+
+  // Method to Show Draw Dialog
+  void _showDrawDialog() {
+    stopTurnTimer(this);
+    showDrawDialog(context);  // Using a dialog widget from dialogs.dart
   }
 
   void _highlightWinningCells() {
-    winningCells = GameLogic.getWinningCells(_grid);
-    setState(() {});
+    String? winningPlayer = GameLogic.getWinningPlayer(_grid);
+    if (winningPlayer != null) {
+      // Highlight the winning cells
+      List<Cell> winningCells = GameLogic.getWinningCells(_grid);
+      if (winningCells.isNotEmpty) {
+        setState(() {
+          this.winningCells = winningCells; // Store the winning cells to be highlighted
+        });
+      }
+
+      showWinnerDialog(context, winningPlayer); 
+    }
   }
 
   @override
