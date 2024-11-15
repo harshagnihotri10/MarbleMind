@@ -169,13 +169,17 @@ flutter test
 ### Code Snippets  
 **Example: Counterclockwise Movement Logic**  
 ```dart
-void moveMarblesCounterclockwise() {
-  // Shift each marble one position counterclockwise.
-}
+ void shiftAllMarblesCounterclockwise(List<List<Cell>> grid, int excludeRow, int excludeCol) {
+    // Directions for counterclockwise movement (up, left, down, right)
+    List<List<int>> directions = [
+      [-1, 0],  // up
+      [0, -1],  // left
+      [1, 0],   // down
+      [0, 1]    // right
+    ];
+
 ```  
 
 ### Glossary  
 - **State Management**: Reactively updating the UI based on application state.  
 - **Counterclockwise Movement**: Marbles shift one position counterclockwise after each turn.  
-```  
-
