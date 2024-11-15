@@ -4,46 +4,57 @@ import '../models/cell.dart';
 class GameGrid extends StatelessWidget {
   final List<List<Cell>> grid;
   final Function(int, int) onCellTap;
+  final List<Cell> winningCells;
 
-  const GameGrid({super.key, required this.grid, required this.onCellTap});
+  const GameGrid({
+    super.key,
+    required this.grid,
+    required this.onCellTap,
+    required this.winningCells,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        childAspectRatio: 1.0,
-      ),
-      itemCount: 16, // 4x4 grid = 16 items
-      itemBuilder: (context, index) {
-        int row = index ~/ 4;
-        int col = index % 4;
+    return Column(
+      children: List.generate(4, (row) {
+        return Row(
+          children: List.generate(4, (col) {
+            final cell = grid[row][col];
+            final isWinningCell = winningCells.contains(
+                cell); // Check if the cell is part of the winning linenningCell = winningCells.contains(cell);  // Check if the cell is part of the winning line
 
-        return GestureDetector(
-          onTap: () => onCellTap(row, col),        
-          child: Container(
-            margin: const EdgeInsets.all(4.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              color: grid[row][col].marble == null
-                  ? Colors.white
-                  : grid[row][col].marble == 'X'
-                      ? Colors.blue
-                      : Colors.red,
-            ),
-            child: Center(
-              child: Text(
-                grid[row][col].marble ?? '',
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
+            return GestureDetector(
+              onTap: () => onCellTap(row, col),
+              child: Container(
+                width: 60,
+                height: 60,
+                margin: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: isWinningCell
+                      ? Colors.green
+                      : Colors.grey[
+                          300], // Highlight winning cells with a different color
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: isWinningCell
+                      ? [
+                          BoxShadow(color: Colors.green, blurRadius: 10)
+                        ] // Add a glow effect for winning cells
+                      : [],
+                ),
+                child: Center(
+                  child: Text(
+                    cell.marble ?? '',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: isWinningCell ? Colors.white : Colors.black,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         );
-      },
+      }),
     );
   }
 }

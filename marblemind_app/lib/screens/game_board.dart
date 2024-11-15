@@ -14,26 +14,26 @@ class GameBoard extends StatefulWidget {
 }
 
 class GameBoardState extends State<GameBoard> {
-  List<List<Cell>> _grid = List.generate(4, (i) => List.generate(4, (j) => Cell(marble: null, row: i, col: j)));
+  List<List<Cell>> _grid = List.generate(
+      4, (i) => List.generate(4, (j) => Cell(marble: null, row: i, col: j)));
   String currentPlayer = 'X';
   bool gameOver = false;
   Timer? _turnTimer;
   int _turnTimeLeft = 30;
+  List<Cell> winningCells = [];
 
   GameLogic gameLogic = GameLogic();
-
 
   @override
   void initState() {
     super.initState();
   }
 
-
   // Getters for turnTimeLeft
   Timer? get turnTimer => _turnTimer;
   int get turnTimeLeft => _turnTimeLeft;
 
-  // Setter for turnTimeLeft 
+  // Setter for turnTimeLeft
   set turnTimeLeft(int timeLeft) {
     setState(() {
       _turnTimeLeft = timeLeft;
@@ -54,45 +54,51 @@ class GameBoardState extends State<GameBoard> {
   }
 
   // Handle cell taps
-void _handleCellTap(int row, int col) {
-  if (gameOver) {
-    _showGameOverDialog();  // Show a dialog if the game is over
-    return;
-  }
+  void _handleCellTap(int row, int col) {
+    if (gameOver) {
+      _showGameOverDialog(); // Show a dialog if the game is over
+      return;
+    }
 
-  // Check if the tapped cell is empty
-  if (_grid[row][col].marble == null) {
-    // Place the current player's marble on the empty cell
-    setState(() {
-      _grid[row][col].marble = currentPlayer;
-    });
+    // Check if the tapped cell is empty
+    if (_grid[row][col].marble == null) {
+      // Place the current player's marble on the empty cell
+      setState(() {
+        _grid[row][col].marble = currentPlayer;
+      });
 
-    // Trigger counterclockwise shift for all other marbles (excluding the newly placed marble)
-    gameLogic.shiftAllMarblesCounterclockwise(_grid, row, col);
+      // Trigger counterclockwise shift for all other marbles (excluding the newly placed marble)
+      gameLogic.shiftAllMarblesCounterclockwise(_grid, row, col);
 
-    // After shift, check for winner or game over condition
-    if (GameLogic.checkForWinner(_grid)) {
-      gameOver = true;
-      stopTurnTimer(this);
-      _showWinnerDialog();
-    } else {
-      // Change turn to the other player
+      // After shift, check for winner or game over condition
+      if (GameLogic.checkForWinner(_grid)) {
+        gameOver = true;
+        stopTurnTimer(this);
+        _highlightWinningCells(); // Highlight the winning cells
+        showWinnerDialog(context, currentPlayer);
+
+        return; // Exit to prevent switching the player
+      } 
+        // Change turn to the other player
       switchTurn();
     }
   }
-}
-
-  
 
   // Winner and game over check
   void _showGameOverDialog() {
     stopTurnTimer(this);
-    showGameOverDialog(context);  // Using a dialog widget from dialogs.dart
+    showGameOverDialog(context); // Using a dialog widget from dialogs.dart
   }
 
   void _showWinnerDialog() {
     stopTurnTimer(this);
-    showWinnerDialog(context, currentPlayer);  // Using a dialog widget from dialogs.dart
+    showWinnerDialog(
+        context, currentPlayer); // Using a dialog widget from dialogs.dart
+  }
+
+  void _highlightWinningCells() {
+    winningCells = GameLogic.getWinningCells(_grid);
+    setState(() {});
   }
 
   @override
@@ -114,6 +120,7 @@ void _handleCellTap(int row, int col) {
             GameGrid(
               grid: _grid,
               onCellTap: _handleCellTap,
+              winningCells: winningCells, // Pass the winning cells to GameGrid
             ),
           ],
         ),
