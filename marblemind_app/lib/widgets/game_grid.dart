@@ -20,8 +20,7 @@ class GameGrid extends StatelessWidget {
         return Row(
           children: List.generate(4, (col) {
             final cell = grid[row][col];
-            final isWinningCell = winningCells.contains(
-                cell); // Check if the cell is part of the winning linenningCell = winningCells.contains(cell);  // Check if the cell is part of the winning line
+            final isWinningCell = winningCells.contains(cell); // Check if the cell is part of the winning linenningCell = winningCells.contains(cell);  // Check if the cell is part of the winning line
 
             return GestureDetector(
               onTap: () => onCellTap(row, col),
@@ -31,13 +30,12 @@ class GameGrid extends StatelessWidget {
                 margin: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   color: isWinningCell
-                      ? Colors.green
-                      : Colors.grey[
-                          300], // Highlight winning cells with a different color
+                      ? Theme.of(context).colorScheme.secondary // Highlight winning cells
+                      : Colors.grey[300],
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: isWinningCell
                       ? [
-                          BoxShadow(color: Colors.green, blurRadius: 10)
+                          BoxShadow(color: Theme.of(context).colorScheme.secondary, blurRadius: 10)
                         ] // Add a glow effect for winning cells
                       : [],
                 ),

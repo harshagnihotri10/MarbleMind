@@ -14,7 +14,7 @@ class GameBoard extends StatefulWidget {
 }
 
 class GameBoardState extends State<GameBoard> {
-  List<List<Cell>> _grid = List.generate(
+  final List<List<Cell>> _grid = List.generate(
       4, (i) => List.generate(4, (j) => Cell(marble: null, row: i, col: j)));
   String currentPlayer = 'X';
   bool gameOver = false;
@@ -130,10 +130,10 @@ class GameBoardState extends State<GameBoard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Current Player: $currentPlayer'),
+            Text('Current Player: $currentPlayer', style: Theme.of(context).textTheme.titleLarge,),
             Text(
               'Time Left: $turnTimeLeft seconds',
-              style: TextStyle(fontSize: 20, color: Colors.black),
+              style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.secondary,),
             ),
             const SizedBox(height: 20),
             GameGrid(

@@ -7,8 +7,12 @@ void showGameOverDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Game Over'),
-        content: const Text('The game is over!'),
+        title: Text('Game Over',
+        style: TextStyle(color: Theme.of(context).colorScheme.secondary),  // Accent color for title
+        ),
+        content: Text('The game is over!',
+        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color), // Text color from theme
+        ),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -28,14 +32,20 @@ void showWinnerDialog(BuildContext context, String currentPlayer) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('We Have a Winner!'),
-        content: Text('$currentPlayer Wins!'),
+        title: Text('We Have a Winner!',
+        style: TextStyle(color: Theme.of(context).colorScheme.secondary), // Accent color for title
+        ),
+        content: Text('$currentPlayer Wins!',
+        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color), // Text color from theme
+        ),
         actions: <Widget>[
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('OK'),
+            child: Text('OK',
+            style: TextStyle(color: Theme.of(context).primaryColor), // Primary color for button text
+            ),
           ),
         ],
       );
@@ -49,10 +59,14 @@ void showDrawDialog(BuildContext context) {
     barrierDismissible: false,  // Prevent dialog from closing on tap outside
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Game Draw!'),
-        content: const Text(
+        title: Text('Game Draw!',
+        style: TextStyle(color: Theme.of(context).colorScheme.secondary),  
+        ),
+        content: Text(
           'The game ended in a draw. No winner this time!',
-          style: TextStyle(fontSize: 18),
+          style: TextStyle(fontSize: 18,
+          color: Theme.of(context).textTheme.bodyLarge?.color, // Text color from theme
+          ),
         ),
         actions: <Widget>[
           // Button to restart the game
@@ -62,9 +76,10 @@ void showDrawDialog(BuildContext context) {
               Navigator.of(context).pop();  // Go back to the main game screen
               // You can add code here to reset the game state if needed
             },
-            child: const Text(
+            child: Text(
               'Restart',
-              style: TextStyle(color: Colors.blue, fontSize: 16),
+              style: TextStyle(color: Theme.of(context).primaryColor,  // Primary color for button text
+                fontSize: 16,),
             ),
           ),
           // Button to go back to the main menu

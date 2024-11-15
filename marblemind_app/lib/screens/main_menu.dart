@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'game_board.dart';  // Import the game board to navigate to the game screen
 
 class MainMenu extends StatelessWidget {
+  const MainMenu({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
