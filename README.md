@@ -37,7 +37,7 @@ This project is for casual gamers and developers interested in exploring game lo
 
 ### Demo Video  
 Click below to watch the game in action:  
-[![Watch the Demo](https://img.youtube.com/vi/<video_id>/0.jpg)](https://www.youtube.com/watch?v=<video_id>)  
+[![Watch the Demo](marblemind_app/screenshots/photo_2024-11-15_17-21-51.jpg)](marblemind_app/Video/video_2024-11-15_18-33-17.mp4)  
 
 
 ### Screenshots  
