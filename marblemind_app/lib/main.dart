@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/game_board.dart';
+import 'screens/main_menu.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const GradientBackground(child: GameBoard()),
+      home: const GradientBackground(child: MainMenu()), // Set MainMenu as the home screen
     );
   }
 }

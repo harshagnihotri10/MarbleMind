@@ -3,60 +3,22 @@ import '../models/cell.dart';
 
 class GameGrid extends StatefulWidget {
   final List<List<Cell>> grid;
-  final Function(int, int) onCellTap;
   final List<Cell> winningCells;
+  final Function(int, int) onCellTap;
 
   const GameGrid({
     super.key,
     required this.grid,
-    required this.onCellTap,
     required this.winningCells,
+    required this.onCellTap,
   });
 
   @override
   _GameGridState createState() => _GameGridState();
 }
 
-class _GameGridState extends State<GameGrid> with SingleTickerProviderStateMixin {
-  late List<List<Cell>> grid;
-  late AnimationController _controller;
-  late Animation<double> _animation;
+class _GameGridState extends State<GameGrid> {
   bool isAnimating = false;
-
-  @override
-  void initState() {
-    super.initState();
-    grid = widget.grid;
-
-    // Animation setup
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  // Trigger the marble animation
-  void animateMarble(int startRow, int startCol, int endRow, int endCol) {
-    setState(() {
-      isAnimating = true;
-    });
-
-    Future.delayed(const Duration(milliseconds: 300), () {
-      setState(() {
-        String marble = grid[startRow][startCol].marble!;
-        grid[startRow][startCol].marble = null;
-        grid[endRow][endCol].marble = marble;
-        isAnimating = false;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +38,7 @@ class _GameGridState extends State<GameGrid> with SingleTickerProviderStateMixin
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
@@ -86,66 +48,75 @@ class _GameGridState extends State<GameGrid> with SingleTickerProviderStateMixin
                 ),
               ],
             ),
-            child: Column(
-              children: List.generate(4, (row) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(4, (col) {
-                    final cell = grid[row][col];
-                    final isWinningCell = widget.winningCells.contains(cell);
-                    return GestureDetector(
-                      onTap: () {
-                        if (isAnimating) return;
-                        widget.onCellTap(row, col);
-                      },
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        margin: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: isWinningCell
-                              ? Theme.of(context).colorScheme.secondary
-                              : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isWinningCell
-                                ? Theme.of(context).colorScheme.secondary
-                                : Colors.grey[400]!,
-                            width: 2,
-                          ),
-                          boxShadow: isWinningCell
-                              ? [
-                                  BoxShadow(
-                                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
-                                    blurRadius: 8,
-                                  ),
-                                ]
-                              : [],
-                        ),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          transitionBuilder: (child, animation) {
-                            return ScaleTransition(scale: animation, child: child);
-                          },
-                          child: cell.marble != null
-                              ? Center(
-                                  key: ValueKey(cell.marble),
-                                  child: Text(
-                                    cell.marble!,
-                                    style: TextStyle(
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
-                                      color: cell.marble == 'X' ? Colors.red : Colors.blue,
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
-                        ),
+            child: GridView.builder(
+              shrinkWrap: true,
+              itemCount: 16, // 4x4 Grid
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 1.0,
+                mainAxisSpacing: 8.0,
+                crossAxisSpacing: 8.0,
+              ),
+              itemBuilder: (context, index) {
+                int row = index ~/ 4;
+                int col = index % 4;
+                final cell = widget.grid[row][col];
+                final isWinningCell = widget.winningCells.contains(cell);
+
+                return GestureDetector(
+                  onTap: () {
+                    if (isAnimating) return;
+                    widget.onCellTap(row, col);
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    decoration: BoxDecoration(
+                      color: isWinningCell
+                          ? Theme.of(context).colorScheme.secondary
+                          : Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isWinningCell
+                            ? Theme.of(context).colorScheme.secondary
+                            : Colors.grey[400]!,
+                        width: 2,
                       ),
-                    );
-                  }),
+                      boxShadow: isWinningCell
+                          ? [
+                              BoxShadow(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .secondary
+                                    .withOpacity(0.5),
+                                blurRadius: 8,
+                              ),
+                            ]
+                          : [],
+                    ),
+                    child: Center(
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        transitionBuilder: (child, animation) {
+                          return ScaleTransition(scale: animation, child: child);
+                        },
+                        child: cell.marble != null
+                            ? Text(
+                                cell.marble!,
+                                key: ValueKey(cell.marble),
+                                style: TextStyle(
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.bold,
+                                  color: cell.marble == 'X'
+                                      ? Colors.red
+                                      : Colors.blue,
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
+                  ),
                 );
-              }),
+              },
             ),
           ),
         ],

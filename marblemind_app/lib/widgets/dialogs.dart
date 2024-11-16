@@ -1,50 +1,88 @@
 import 'package:flutter/material.dart';
 
+/// Reusable Custom Dialog Widget
+class CustomDialog extends StatelessWidget {
+  final String title;
+  final String message;
+  final List<Widget> actions;
 
-// Dialog for game over
-void showGameOverDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Game Over',
-        style: TextStyle(color: Theme.of(context).colorScheme.secondary),  // Accent color for title
+  const CustomDialog({
+    super.key,
+    required this.title,
+    required this.message,
+    required this.actions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        title,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.secondary,
+          fontWeight: FontWeight.bold,
         ),
-        content: Text('The game is over!',
-        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color), // Text color from theme
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK'),
+      ),
+      content: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: Text(
+          message,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+            fontSize: 16,
           ),
-        ],
-      );
-    },
-  );
+        ),
+      ),
+      actions: actions,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+    );
+  }
 }
 
-// Dialog for declaring a winner
-void showWinnerDialog(BuildContext context, String currentPlayer) {
+/// Show Game Over Dialog
+void showGameOverDialog(
+    BuildContext context, Function resetGame, Function navigateToMainMenu) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('We Have a Winner!',
-        style: TextStyle(color: Theme.of(context).colorScheme.secondary), // Accent color for title
-        ),
-        content: Text('$currentPlayer Wins!',
-        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color), // Text color from theme
-        ),
+      return CustomDialog(
+        title: 'Game Over',
+        message: 'The game is over!',
         actions: <Widget>[
           TextButton(
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
             onPressed: () {
               Navigator.of(context).pop();
+              resetGame();
             },
-            child: Text('OK',
-            style: TextStyle(color: Theme.of(context).primaryColor), // Primary color for button text
+            child: Text('Play Again',
+                style: TextStyle(color: Theme.of(context).primaryColor)),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Consistent shape
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
+            onPressed: () {
+              showConfirmationDialog(
+                context,
+                'Confirmation',
+                'Are you sure you want to quit the game?',
+                navigateToMainMenu,
+              );
+            },
+            child: const Text(
+              'Quit',
+              style: TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -53,45 +91,174 @@ void showWinnerDialog(BuildContext context, String currentPlayer) {
   );
 }
 
-void showDrawDialog(BuildContext context) {
+/// Show Winner Dialog
+void showWinnerDialog(
+    BuildContext context, String currentPlayer, Function resetGame, Function navigateToMainMenu) {
   showDialog(
     context: context,
-    barrierDismissible: false,  // Prevent dialog from closing on tap outside
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Game Draw!',
-        style: TextStyle(color: Theme.of(context).colorScheme.secondary),  
-        ),
-        content: Text(
-          'The game ended in a draw. No winner this time!',
-          style: TextStyle(fontSize: 18,
-          color: Theme.of(context).textTheme.bodyLarge?.color, // Text color from theme
-          ),
-        ),
+      return CustomDialog(
+        title: 'We Have a Winner!',
+        message: '$currentPlayer Wins!',
         actions: <Widget>[
-          // Button to restart the game
           TextButton(
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Consistent shape
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
             onPressed: () {
-              Navigator.of(context).pop();  // Close the dialog
-              Navigator.of(context).pop();  // Go back to the main game screen
-              // You can add code here to reset the game state if needed
+              Navigator.of(context).pop();
+              resetGame();
+            },
+            child: Text('Play Again',
+              style: TextStyle(color: Theme.of(context).primaryColor)
+            ),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Consistent shape
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
+            onPressed: () {
+              showConfirmationDialog(
+                context,
+                'Confirmation',
+                'Are you sure you want to quit the game?',
+                navigateToMainMenu,
+              );
+            },
+            child: const Text(
+              'Quit',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+/// Show Draw Dialog
+void showDrawDialog(
+    BuildContext context, Function resetGame, Function navigateToMainMenu) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return CustomDialog(
+        title: 'Game Draw!',
+        message: 'The game ended in a draw. No winner this time!',
+        actions: <Widget>[
+          TextButton(
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Consistent shape
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+              resetGame();
             },
             child: Text(
               'Restart',
-              style: TextStyle(color: Theme.of(context).primaryColor,  // Primary color for button text
-                fontSize: 16,),
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 16,
+              ),
             ),
           ),
-          // Button to go back to the main menu
           TextButton(
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Consistent shape
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
             onPressed: () {
-              Navigator.of(context).pop();  // Close the dialog
-              Navigator.of(context).pop();  // Go back to main menu (if applicable)
-              // Implement navigation to the main menu if you have one
+              showConfirmationDialog(
+                context,
+                'Confirmation',
+                'Are you sure you want to go to the Main Menu?',
+                navigateToMainMenu,
+              );
             },
             child: const Text(
               'Main Menu',
               style: TextStyle(color: Colors.red, fontSize: 16),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+// Show Confirmation Dialog
+void showConfirmationDialog(BuildContext context, String title, String content, Function onConfirm) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          title,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.secondary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          content,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+            fontSize: 16,
+          ),
+        ),
+        actions: [
+          // "No" button with outlined style and secondary color
+          OutlinedButton(
+            onPressed: () =>
+                Navigator.of(context).pop(), // Close the dialog without action
+            child: Row(
+              children: [
+                const Icon(Icons.close,
+                    color: Colors.red), // Add icon for better clarity
+                const SizedBox(width: 6),
+                const Text('No', style: TextStyle(color: Colors.red)),
+              ],
+            ),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: Colors.red, width: 1.5), // Border color
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Rounded corners
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              onConfirm(); // Execute the confirmed action
+            },
+            child: Row(
+              children: [
+                const Icon(Icons.check,
+                    color: Colors.white), // Add icon for better clarity
+                const SizedBox(width: 6),
+                const Text('Yes'),
+              ],
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor, // Button color
+              textStyle:
+                  const TextStyle(fontWeight: FontWeight.bold), // Bold text
+              elevation: 5, // Elevation for depth effect
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Rounded corners
+              ),
             ),
           ),
         ],

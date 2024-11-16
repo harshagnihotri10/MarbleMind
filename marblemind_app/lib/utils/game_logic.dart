@@ -14,10 +14,10 @@ class GameLogic {
     List<Cell> marbles = [];
     
     // Collect all the marbles in the grid excluding the one placed in the current turn
-    for (int row = 0; row < 4; row++) {
-      for (int col = 0; col < 4; col++) {
-        if (grid[row][col].marble != null && (row != excludeRow || col != excludeCol)) {
-          marbles.add(grid[row][col]);
+    for (int row = 0; row < grid.length; row++) {
+      for (int col = 0; col < grid[row].length; col++) {
+        if (!(row == excludeRow && col == excludeCol) && grid[row][col].marble != null) {
+          marbles.add(Cell(marble: grid[row][col].marble, row: row, col: col));
         }
       }
     }
