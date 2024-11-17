@@ -26,7 +26,9 @@ The **Two-Player Counterclockwise Marble Game** is a digital, turn-based strateg
 - Counterclockwise marble movement after every turn.  
 - Dynamic UI with interactive elements.  
 - Automatic win-condition checks.  
-- Timer for each round to maintain gameplay pace.  
+- Timer for each round to maintain gameplay pace.
+- Post-winning dialog box: At the end of the game, players can choose to "Play Again" or "Quit" with a confirmation dialog.
+- Rules Dialog: Accessible from the main menu, explaining the game's rules.
 
 ### Target Audience  
 This project is for casual gamers and developers interested in exploring game logic and Flutter app development.  
@@ -145,7 +147,7 @@ The game adds strategic depth to a classic two-player board game by introducing 
   ```  
 
 ### Key Functionalities  
-1. **Start Game**: Click "Start Game" on the home screen.  
+1. **Start Game**: Click "Start New Game" on the home screen.  
 2. **Place Marbles**: Tap an empty cell to place your marble.  
 3. **Counterclockwise Movement**: Watch marbles shift after each turn.  
 4. **Win Check**: The game announces the winner upon meeting the win condition.  
@@ -179,7 +181,7 @@ flutter test
 
 ## Acknowledgements and Credits  
 - **Flutter**: For its cross-platform development capabilities.  
-- **Provider**: For state management.  
+
 
 ---
 
