@@ -39,22 +39,39 @@ This project is for casual gamers and developers interested in exploring game lo
 
 Click below to watch the game in action:  
 
-https://github.com/user-attachments/assets/3f1cfa63-17b5-43b4-b0db-f7181bf61ac5
+[https://github.com/user-attachments/assets/3f1cfa63-17b5-43b4-b0db-f7181bf61ac5](https://github.com/user-attachments/assets/b52238af-8a54-4301-b045-712ff870e1aa)
 
 ### Screenshots  
 
+
 #### Home Screen  
-<img src="marblemind_app/screenshots/photo_2024-11-15_17-21-51.jpg" alt="Home Screen" width="200" />  
+<img src="marblemind_app/screenshots/home.jpg" alt="Home Screen" width="200" /> 
+
+#### Rules
+<img src="marblemind_app/screenshots/rules.jpg" alt="Rules" width="200" />  
 
 #### Gameplay  
-<img src="marblemind_app/screenshots/photo_2024-11-15_17-22-03.jpg" alt="Gameplay" width="200" />  
-<img src="marblemind_app/screenshots/photo_2024-11-15_17-21-59.jpg" alt="Gameplay" width="200" />  
-<img src="marblemind_app/screenshots/photo_2024-11-15_17-21-56.jpg" alt="Gameplay" width="200" />  
+<img src="marblemind_app/screenshots/grid.jpg" alt="Empty grid" width="200" />  
+<img src="marblemind_app/screenshots/gameplay2.jpg" alt="Gameplay 1" width="200" />  
+<img src="marblemind_app/screenshots/gameplay1.jpg" alt="Gameplay 2" width="200" />  
 
 #### Win Condition  
-<img src="marblemind_app/screenshots/photo_2024-11-15_17-22-08.jpg" alt="Win Condition" width="200" />  
-<img src="marblemind_app/screenshots/photo_2024-11-15_17-22-10.jpg" alt="Win Screen" width="200" />  
-<img src="marblemind_app/screenshots/photo_2024-11-15_17-22-05.jpg" alt="Draw Screen" width="200" />  
+<img src="marblemind_app/screenshots/win2.jpg" alt="O Win" width="200" />  
+<img src="marblemind_app/screenshots/win1.jpg" alt="Win Screen O" width="200" />  
+<img src="marblemind_app/screenshots/win3.jpg" alt="X win" width="200" />  
+<img src="marblemind_app/screenshots/win4.jpg" alt="Win Screen X" width="200" />  
+ 
+
+#### Draw Condition  
+<img src="marblemind_app/screenshots/draw1.jpg" alt="Draw Condition" width="200" />
+
+#### Dialog boxes
+<img src="marblemind_app/screenshots/dialog1.jpg" alt="Main menu Dialog" width="200" /> 
+<img src="marblemind_app/screenshots/dialog2.jpg" alt="Restart dialog" width="200" /> 
+<img src="marblemind_app/screenshots/gameover.jpg" alt="game over dialog" width="200" /> 
+<img src="marblemind_app/screenshots/quit.jpg" alt="Quit dialog" width="200" /> 
+
+
 
 ---
 
