@@ -12,7 +12,6 @@ class CustomDialog extends StatelessWidget {
     required this.message,
     required this.actions,
   });
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
