@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'screens/game_board.dart';
 import 'screens/main_menu.dart';
 
 void main() {

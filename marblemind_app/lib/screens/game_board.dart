@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'main_menu.dart';
+import 'leaderboard.dart';
 import '../models/cell.dart';
 import '../widgets/game_grid.dart';
 import '../widgets/dialogs.dart';
 import '../utils/timer_utils.dart';
 import '../utils/game_logic.dart';
+import '../utils/stats_manager.dart';
 
 class GameBoard extends StatefulWidget {
   const GameBoard({super.key});
@@ -25,11 +26,7 @@ class GameBoardState extends State<GameBoard> {
   List<Cell> winningCells = [];
 
   GameLogic gameLogic = GameLogic();
-
-  // Add variables for game stats
-  int _xWins = 0;
-  int _oWins = 0;
-  int _draws = 0;
+  StatsManager statsManager = StatsManager();
 
   @override
   void initState() {
@@ -46,50 +43,6 @@ class GameBoardState extends State<GameBoard> {
     setState(() {
       _turnTimeLeft = timeLeft;
     });
-  }
-
-  // Load the statistics from SharedPreferences
-  void _loadStats() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _xWins = prefs.getInt('xWins') ?? 0;
-      _oWins = prefs.getInt('oWins') ?? 0;
-      _draws = prefs.getInt('draws') ?? 0;
-    });
-  }
-
-  // Save the statistics to SharedPreferences
-  void _saveStats() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setInt('xWins', _xWins);
-    prefs.setInt('oWins', _oWins);
-    prefs.setInt('draws', _draws);
-  }
-
-  // Reset the game state
-  void _resetGameState() {
-    setState(() {
-      for (var row in _grid) {
-        for (var cell in row) {
-          cell.marble = null;
-        }
-      }
-      // Reset all cells
-      currentPlayer = 'X'; // Reset the starting player
-      gameOver = false; // Game is not over
-      winningCells.clear(); // Clear any winning cells from the previous round
-      _turnTimeLeft = 30; // Reset the timer to its original value
-    });
-    startTurnTimer(this); // Restart the timer
-  }
-
-  // Navigate to main menu or exit
-  void _navigateToMainMenu() {
-    Navigator.of(context).pushReplacement(
-
-      MaterialPageRoute(builder: (context) => const MainMenu()),
-      
-    );
   }
 
   // Switch turn and reset the timer
@@ -128,8 +81,8 @@ class GameBoardState extends State<GameBoard> {
         gameOver = true;
         stopTurnTimer(this);
         _highlightWinningCells(); // Highlight the winning cells
-        showWinnerDialog(context, winningPlayer,
-            _resetGameState, _navigateToMainMenu); // Show the correct winning player's name
+        showWinnerDialog(context, winningPlayer, _resetGameState,
+            _navigateToMainMenu); // Show the correct winning player's name
         _updateStats(winningPlayer);
       } else if (GameLogic.checkForDraw(_grid)) {
         // New Draw Condition Check
@@ -144,22 +97,43 @@ class GameBoardState extends State<GameBoard> {
     }
   }
 
+  // Reset the game state
+  void _resetGameState() {
+    setState(() {
+      for (var row in _grid) {
+        for (var cell in row) {
+          cell.marble = null;
+        }
+      }
+      // Reset all cells
+      currentPlayer = 'X'; // Reset the starting player
+      gameOver = false; // Game is not over
+      winningCells.clear(); // Clear any winning cells from the previous round
+      _turnTimeLeft = 30; // Reset the timer to its original value
+    });
+
+    setState(() {});      // Refresh UI after resetting stats
+    startTurnTimer(this); // Restart the timer
+  }
+
+  Future<void> _loadStats() async {
+    await statsManager.loadStats();
+    setState(() {}); // Trigger a UI update after loading stats
+  }
+
   // Update the stats based on the result
   void _updateStats(String result) {
-    if (result == 'X') {
-      setState(() {
-        _xWins++;
-      });
-    } else if (result == 'O') {
-      setState(() {
-        _oWins++;
-      });
-    } else {
-      setState(() {
-        _draws++;
-      });
-    }
-    _saveStats(); // Save the updated stats
+    statsManager.updateStats(result);
+    statsManager.saveStats();
+    setState(() {}); // Refresh UI to show updated stats
+  }
+
+  // Stats display section in the UI
+  Widget _buildStatsDisplay() {
+    return Text(
+      'X Wins: ${statsManager.xWins} | O Wins: ${statsManager.oWins} | Draws: ${statsManager.draws}',
+      style: Theme.of(context).textTheme.bodyLarge,
+    );
   }
 
   // Winner and game over check
@@ -171,8 +145,8 @@ class GameBoardState extends State<GameBoard> {
 
   void _showWinnerDialog() {
     stopTurnTimer(this);
-    showWinnerDialog(context, currentPlayer,
-        _resetGameState, _navigateToMainMenu); // Using a dialog widget from dialogs.dart
+    showWinnerDialog(context, currentPlayer, _resetGameState,
+        _navigateToMainMenu); // Using a dialog widget from dialogs.dart
   }
 
   // Method to Show Draw Dialog
@@ -194,8 +168,16 @@ class GameBoardState extends State<GameBoard> {
         });
       }
 
-      showWinnerDialog(context, winningPlayer, _resetGameState, _navigateToMainMenu);
+      showWinnerDialog(
+          context, winningPlayer, _resetGameState, _navigateToMainMenu);
     }
+  }
+
+  // Navigate to main menu or exit
+  void _navigateToMainMenu() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const MainMenu()),
+    );
   }
 
   @override
@@ -226,8 +208,7 @@ class GameBoardState extends State<GameBoard> {
               winningCells: winningCells, // Pass the winning cells to GameGrid
             ),
             const SizedBox(height: 20),
-            // Stats Section
-            Text('X Wins: $_xWins | O Wins: $_oWins | Draws: $_draws'),
+            _buildStatsDisplay(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -256,10 +237,10 @@ class GameBoardState extends State<GameBoard> {
                 ElevatedButton(
                   onPressed: () {
                     showConfirmationDialog(
-                        context, 
-                        'Confirm Main Menu',
-                        'Are you sure you want to go to the main menu?',
-                        () {
+                      context,
+                      'Confirm Main Menu',
+                      'Are you sure you want to go to the main menu?',
+                      () {
                         _navigateToMainMenu();
                       },
                     );
@@ -275,6 +256,27 @@ class GameBoardState extends State<GameBoard> {
                     elevation: 2, // Slight shadow for depth
                   ),
                   child: Text('Main Menu'),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              Leaderboard()), // Navigate to Leaderboard
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context)
+                        .primaryColor, // Button background color
+                    foregroundColor: Colors.white, // Text color
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8), // Rounded corners
+                    ),
+                    elevation: 2, // Slight shadow for depth
+                  ),
+                  child: Text('Leaderboard'),
                 ),
               ],
             ),

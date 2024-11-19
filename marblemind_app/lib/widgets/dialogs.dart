@@ -221,7 +221,13 @@ void showConfirmationDialog(BuildContext context, String title, String content, 
           // "No" button with outlined style and secondary color
           OutlinedButton(
             onPressed: () =>
-                Navigator.of(context).pop(), // Close the dialog without action
+                Navigator.of(context).pop(),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: Colors.red, width: 1.5), // Border color
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8), // Rounded corners
+              ),
+            ), // Close the dialog without action
             child: Row(
               children: [
                 const Icon(Icons.close,
@@ -230,26 +236,12 @@ void showConfirmationDialog(BuildContext context, String title, String content, 
                 const Text('No', style: TextStyle(color: Colors.red)),
               ],
             ),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: Colors.red, width: 1.5), // Border color
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8), // Rounded corners
-              ),
-            ),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop(); // Close the dialog
               onConfirm(); // Execute the confirmed action
             },
-            child: Row(
-              children: [
-                const Icon(Icons.check,
-                    color: Colors.white), // Add icon for better clarity
-                const SizedBox(width: 6),
-                const Text('Yes'),
-              ],
-            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor, // Button color
               textStyle:
@@ -258,6 +250,14 @@ void showConfirmationDialog(BuildContext context, String title, String content, 
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8), // Rounded corners
               ),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.check,
+                    color: Colors.white), // Add icon for better clarity
+                const SizedBox(width: 6),
+                const Text('Yes'),
+              ],
             ),
           ),
         ],
