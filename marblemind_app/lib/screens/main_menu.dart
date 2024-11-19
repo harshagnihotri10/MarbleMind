@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'game_board.dart';
 import 'dart:io';
-
+import '../screens/leaderboard.dart';
 
 class MainMenu extends StatelessWidget {
   const MainMenu({super.key});
@@ -26,11 +26,13 @@ class MainMenu extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                 backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Start New Game', style: TextStyle(fontSize: 20)),
+              child:
+                  const Text('Start New Game', style: TextStyle(fontSize: 20)),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -61,7 +63,8 @@ class MainMenu extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Colors.white,
               ),
@@ -70,11 +73,29 @@ class MainMenu extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                // Navigate to Leaderboard screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Leaderboard()), // Navigating to the leaderboard
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Leaderboard', style: TextStyle(fontSize: 20)),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
                 // Exit the app
                 exit(0);
               },
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                 backgroundColor: Colors.redAccent,
                 foregroundColor: Colors.white,
               ),
