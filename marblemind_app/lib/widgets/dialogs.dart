@@ -265,3 +265,31 @@ void showConfirmationDialog(BuildContext context, String title, String content, 
     },
   );
 }
+
+/// Show Custom Information Dialog (for Save/Load Success or Failure)
+void showCustomDialog(BuildContext context, String title, String message) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return CustomDialog(
+        title: title,
+        message: message,
+        actions: <Widget>[
+          TextButton(
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK',
+                style: TextStyle(color: Colors.green)),
+          ),
+        ],
+      );
+    },
+  );
+}

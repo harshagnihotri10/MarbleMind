@@ -8,6 +8,7 @@ import '../widgets/dialogs.dart';
 import '../utils/timer_utils.dart';
 import '../utils/game_logic.dart';
 import '../utils/stats_manager.dart';
+import '../utils/save_load_manager.dart';
 
 class GameBoard extends StatefulWidget {
   const GameBoard({super.key});
@@ -17,7 +18,7 @@ class GameBoard extends StatefulWidget {
 }
 
 class GameBoardState extends State<GameBoard> {
-  final List<List<Cell>> _grid = List.generate(
+  List<List<Cell>> _grid = List.generate(
       4, (i) => List.generate(4, (j) => Cell(marble: null, row: i, col: j)));
   String currentPlayer = 'X';
   bool gameOver = false;
@@ -27,11 +28,17 @@ class GameBoardState extends State<GameBoard> {
 
   GameLogic gameLogic = GameLogic();
   StatsManager statsManager = StatsManager();
+  SaveLoadManager saveLoadManager = SaveLoadManager();
 
   @override
   void initState() {
     super.initState();
     _loadStats();
+
+    // Ensure _loadGameState runs after the widget tree is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadGameState();
+    });
   }
 
   // Getters for turnTimeLeft
@@ -114,6 +121,57 @@ class GameBoardState extends State<GameBoard> {
 
     setState(() {});      // Refresh UI after resetting stats
     startTurnTimer(this); // Restart the timer
+  }
+
+  // Method to Save Game State
+  Future<void> _saveGameState() async {
+  // Call saveGameState and check the result.
+  bool saveSuccessful = await SaveLoadManager().saveGameState(_grid, currentPlayer);
+  
+  // Use the result to show the appropriate message.
+  if (saveSuccessful) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Game Saved!'))
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to save the game state.'))
+    );
+  }
+}
+
+
+  // Method to Load Game State
+  Future<void> _loadGameState() async {
+    try {
+      Map<String, dynamic>? gameState = await SaveLoadManager().loadGameState();
+      
+      if (gameState != null) {
+      // Update the UI with the loaded state
+      setState(() {
+        _grid = gameState['grid']; // Use the grid returned directly
+        currentPlayer = gameState['currentPlayer'];
+      });
+      
+        // Show a SnackBar indicating that the game has been successfully loaded
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Game Loaded!'),
+          backgroundColor: Colors.green, // Green color for success
+        ));
+      } else {
+        // Show a SnackBar indicating no saved game was found
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('No Saved Game Found!'),
+          backgroundColor: Colors.red, // Red color for error
+        ));
+      }
+    } catch (e, stacktrace) {
+      logger.e("Error loading game state: $e", e, stacktrace);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to Load Game State!'),
+        backgroundColor: Colors.red,
+      ));
+    }
   }
 
   Future<void> _loadStats() async {
@@ -206,6 +264,56 @@ class GameBoardState extends State<GameBoard> {
               grid: _grid,
               onCellTap: _handleCellTap,
               winningCells: winningCells, // Pass the winning cells to GameGrid
+            ),
+            const SizedBox(height: 20),
+            _buildStatsDisplay(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Save Button
+                ElevatedButton(
+                  onPressed: () {
+                    showConfirmationDialog(
+                      context,
+                      'Confirm Save',
+                      'Do you want to save the current game state?',
+                      _saveGameState,
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 2,
+                  ),
+                  child: Text('Save Game'),
+                ),
+                const SizedBox(width: 20),
+                // Load Button
+                ElevatedButton(
+                  onPressed: () {
+                    showConfirmationDialog(
+                      context,
+                      'Confirm Load',
+                      'Do you want to load the previously saved game state?',
+                      _loadGameState,
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 2,
+                  ),
+                  child: Text('Load Game'),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             _buildStatsDisplay(),
